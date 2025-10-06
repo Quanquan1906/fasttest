@@ -47,11 +47,5 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          cd kubernetes
-          if [ -f build-and-deploy.sh ]; then
-            chmod +x build-and-deploy.sh
-            ./build-and-deploy.sh
-          else
-            echo "❌ build-and-deploy.sh not found!"
-            exit 1
-          fi
+          chmod +x kubernetes/build-and-deploy.sh
+          ./kubernetes/build-and-deploy.sh
