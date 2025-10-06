@@ -1,30 +1,26 @@
-name: CI/CD - Food Ordering System
+name: CI - Build and Push Images
 
 on:
   push:
     branches: ["main"]
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout source code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Docker build environment
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3️⃣ Login Docker Hub (để push image)
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4️⃣ Build & Push backend services
       - name: Build & push backend services
         run: |
           services=("auth" "order" "restaurant" "notification")
@@ -34,31 +30,8 @@ jobs:
             docker push ${{ secrets.DOCKER_USERNAME }}/food-${service}-service:latest
           done
 
-      # 5️⃣ Build & Push frontend
       - name: Build & push frontend image
         run: |
           echo "🚀 Building frontend..."
           docker build -t ${{ secrets.DOCKER_USERNAME }}/food-frontend:latest ./frontend
           docker push ${{ secrets.DOCKER_USERNAME }}/food-frontend:latest
-
-      # 6️⃣ Install kubectl CLI
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
-
-      # 7️⃣ Configure kubeconfig (decode từ base64)
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ~/.kube/config
-          chmod 600 ~/.kube/config
-
-      # 8️⃣ Verify cluster connection
-      - name: Verify cluster connection
-        run: kubectl get nodes
-
-      # 9️⃣ Deploy to Kubernetes
-      - name: Deploy to Kubernetes
-        run: |
-          echo "🚀 Starting deployment..."
-          chmod +x kubernetes/build-and-deploy.sh
-          ./kubernetes/build-and-deploy.sh
