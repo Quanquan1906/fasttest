@@ -15,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Make the entrypoint script executable
-RUN chmod +x /app/docker-entrypoint.sh
+# RUN chmod +x /app/docker-entrypoint.sh
 
 # Set environment variable to bind to all network interfaces
 ENV HOST=0.0.0.0
@@ -25,7 +25,7 @@ ENV WDS_SOCKET_PORT=0
 EXPOSE 3000
 
 # Use the entrypoint script to set up environment variables
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+# ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # Start the app
 CMD ["npm", "start"] 
